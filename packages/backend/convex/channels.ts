@@ -19,7 +19,6 @@ export const createChannel = mutation({
       isPrivate,
       createdBy: identity.subject,
       createdAt: Date.now(),
-      // unread: false,
     });
 
     if (isPrivate) {
@@ -81,5 +80,13 @@ export const getChannels = query({
       ...publicChannels,
       ...privateChannels.filter((c): c is Doc<"channels"> => c !== null),
     ];
+  },
+});
+
+export const getChannel = query({
+  args: { channelId: v.id("channels") },
+  handler: async (ctx, { channelId }) => {
+    const channel = await ctx.db.get(channelId);
+    return channel;
   },
 });

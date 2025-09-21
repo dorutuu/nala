@@ -14,7 +14,7 @@ import { type Id } from "@my-better-t-app/backend/convex/_generated/dataModel";
 export default function ChannelPage() {
   const params = useParams();
   const channelId = params.channelId as Id<"channels">;
-
+  const channel = useQuery(api.channels.getChannel, { channelId });
   const messages = useQuery(api.messages.listMessages, { channelId });
   const sendMessage = useMutation(api.messages.sendMessage);
 
@@ -32,7 +32,7 @@ export default function ChannelPage() {
       {/* Channel Header */}
       <div className="h-14 border-b border-border bg-card px-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <h1 className="font-semibold text-lg">#</h1>
+          <h1 className="font-semibold text-lg">{`# ${channel?.name}`}</h1>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default function ChannelPage() {
         >
           <div className="flex-1">
             <Input
-              placeholder={`Message #${channelId}`}
+              placeholder={`Message #${channel?.name}`}
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="border-0 bg-transparent p-0 text-sm placeholder:text-muted-foreground focus-visible:ring-0"
