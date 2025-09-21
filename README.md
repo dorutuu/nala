@@ -2,4 +2,4 @@
 
 ## Open Source Slack alternative 
 
-# Project status: in the works - 1% done
+### Project status: in the works - 1% done
