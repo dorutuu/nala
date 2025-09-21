@@ -7,7 +7,6 @@ export const createChannel = mutation({
     orgId: v.string(),
     name: v.string(),
     isPrivate: v.boolean(),
-    
   },
   handler: async (ctx, { orgId, name, isPrivate }) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -66,9 +65,9 @@ export const getChannels = query({
 
     const privateChannels = await Promise.all(
       privateChannelMemberships.map(async (membership) => {
-        const channel = (await ctx.db.get(membership.channelId as any)) as Doc<
-          "channels"
-        >;
+        const channel = (await ctx.db.get(
+          membership.channelId as any
+        )) as Doc<"channels">;
         if (channel && channel.orgId === orgId) {
           return channel;
         }
@@ -88,5 +87,31 @@ export const getChannel = query({
   handler: async (ctx, { channelId }) => {
     const channel = await ctx.db.get(channelId);
     return channel;
+  },
+});
+
+export const countChannelMembers = query({
+  args: { channelId: v.id("channels") },
+  handler: async (ctx, { channelId }) => {
+    const channel = await ctx.db.get(channelId);
+    if (!channel) {
+      return 0; // Channel not found
+    }
+
+    if (!channel.isPrivate) {
+      // For public channels, count all org members
+      const orgMembers = await ctx.db
+        .query("orgMemberships")
+        .withIndex("by_org", (q) => q.eq("orgId", channel.orgId))
+        .collect();
+      return orgMembers.length;
+    } else {
+      // For private channels, count channel memberships
+      const channelMembers = await ctx.db
+        .query("channelMemberships")
+        .withIndex("by_channel", (q) => q.eq("channelId", channelId))
+        .collect();
+      return channelMembers.length;
+    }
   },
 });

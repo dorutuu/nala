@@ -4,18 +4,9 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Hash,
-  Lock,
-  Plus,
-  Settings,
-  ChevronDown,
-  Bell,
-  User,
-} from "lucide-react";
+import { Hash, Lock, ChevronDown, Bell, User } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
 import { CreateChannelModal } from "./create-channel-modal";
@@ -27,13 +18,11 @@ export function Sidebar() {
   const { user } = useUser();
 
   const orgId = params.orgId as string;
-  console.log(orgId);
-  
+
   const channelId = params.channelId as string;
 
   const organizations = useQuery(api.organizations.getOrganizations);
-  console.log('org', organizations);
-  
+
   const channels = useQuery(
     api.channels.getChannels,
     orgId ? { orgId } : "skip"
@@ -47,7 +36,6 @@ export function Sidebar() {
 
   return (
     <div className="w-64 bg-sidebar text-sidebar-foreground flex flex-col">
-      {/* Workspace Header */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -70,7 +58,6 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
       <ScrollArea className="flex-1 px-2">
         <div className="py-2 space-y-1">
           <Button
@@ -91,7 +78,6 @@ export function Sidebar() {
 
         <Separator className="my-2 bg-sidebar-border" />
 
-        {/* Channels */}
         <div className="py-2">
           <div className="flex items-center justify-between px-2 py-1">
             <span className="text-xs font-medium text-sidebar-foreground/70 uppercase tracking-wide">
@@ -130,7 +116,6 @@ export function Sidebar() {
         {/* ... (Direct Messages section can be added here) ... */}
       </ScrollArea>
 
-      {/* User Profile */}
       <div className="p-2 border-t border-sidebar-border">
         <div className="flex items-center gap-2 p-2 rounded hover:bg-sidebar-accent cursor-pointer">
           <Avatar className="h-8 w-8">
