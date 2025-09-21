@@ -1,4 +1,3 @@
-// convex/organizations.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc } from "./_generated/dataModel";
@@ -8,12 +7,18 @@ export const createOrg = mutation({
   handler: async (ctx, { name }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
-
+    
     const orgId = await ctx.db.insert("organizations", {
-      name,
+      name: name,
       ownerId: identity.subject,
-      createdAt: Date.now(),
-    });
+      createdAt: Date.now()
+    })
+    await ctx.db.insert("users", {
+      name: identity.name!,
+      clerkId: identity.subject,
+      email: identity.email!,
+      avatarUrl: identity.pictureUrl!
+    })
 
     await ctx.db.insert("orgMemberships", {
       orgId,
@@ -22,7 +27,15 @@ export const createOrg = mutation({
       joinedAt: Date.now(),
     });
 
-    return orgId;
+    const channelId = await ctx.db.insert("channels", {
+      orgId,
+      name: "general",
+      isPrivate: false,
+      createdBy: identity.subject,
+      createdAt: Date.now(),
+    });
+
+    return { orgId, channelId };
   },
 });
 

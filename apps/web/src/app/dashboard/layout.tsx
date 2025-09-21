@@ -1,43 +1,16 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../../index.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import Providers from "@/components/providers";
-import Header from "@/components/header";
+"use client";
+import { Sidebar } from "@/components/sidebar";
+import React from "react";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-	title: "Nala",
-	description: "my-better-t-app",
-};
-
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
-	return (
-		<html lang="en" suppressHydrationWarning>
-			<body suppressHydrationWarning
-				className={`${geistSans.variable} ${geistMono.variable}  antialiased overflow-hidden`}
-			>
-				<ClerkProvider>
-					<Providers>
-						<div className="grid grid-rows-[auto_1fr] h-svh">
-							{children}
-						</div>
-					</Providers>
-				</ClerkProvider>
-			</body>
-		</html>
-	);
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 ">{children}</div>
+    </div>
+  );
 }

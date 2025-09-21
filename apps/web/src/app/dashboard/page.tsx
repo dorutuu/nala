@@ -1,23 +1,16 @@
-"use client";
+import { Authenticated, Unauthenticated } from "convex/react";
 
-import { SignInButton } from "@clerk/nextjs";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { SlackInterface } from "@/components/sidebar";
-
-export default function Dashboard() {
-  return (
-    <>
-      <Authenticated>
+export default function DashboardPage() {
+    return (
         <div>
-          <SlackInterface />
+            <Authenticated>
+                <div>
+                    {/* The dashboard content is now handled by the layout and the [channelId] page */}
+                </div>
+            </Authenticated>
+            <Unauthenticated>
+                <p>You must be signed in to see the dashboard.</p>
+            </Unauthenticated>
         </div>
-      </Authenticated>
-      <Unauthenticated>
-        <SignInButton />
-      </Unauthenticated>
-      <AuthLoading>
-        <div>Loading...</div>
-      </AuthLoading>
-    </>
-  );
+    );
 }

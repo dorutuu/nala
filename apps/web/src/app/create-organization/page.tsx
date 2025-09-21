@@ -11,17 +11,17 @@ export default function CreateOrganizationPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const orgId = await createOrg({ name });
-        router.push(`/dashboard?orgId=${orgId}`);
+        const { orgId, channelId } = await createOrg({ name });
+        router.push(`/dashboard/${orgId}/${channelId}`);
     };
 
     return (
         <div className="flex items-center justify-center h-screen">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+            <div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold text-center">Create an Organization</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="name" className="block text-sm font-medium ">
                             Organization Name
                         </label>
                         <input
