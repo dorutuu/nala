@@ -2,6 +2,7 @@
 
 import Message from "@/components/message";
 import { MessageInput } from "@/components/message-input";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
@@ -27,6 +28,7 @@ export default function ChannelPage() {
             {`${nrOfMembers} members`}{" "}
           </Badge>
         </div>
+        <ModeToggle />
       </div>
 
       <ScrollArea className="flex-1 p-4 h-0">
