@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,9 +11,9 @@ import { useQuery } from "convex/react";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
 import { CreateChannelModal } from "./create-channel-modal";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function Sidebar() {
-  const router = useRouter();
   const params = useParams();
   const { user } = useUser();
 
@@ -95,16 +95,16 @@ export function Sidebar() {
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 }`}
-                onClick={() =>
-                  router.push(`/dashboard/${orgId}/${channel._id}`)
-                }
+                asChild
               >
-                {channel.isPrivate ? (
-                  <Lock className="mr-2 h-4 w-4" />
-                ) : (
-                  <Hash className="mr-2 h-4 w-4" />
-                )}
-                <span className="truncate">{channel.name}</span>
+                <Link href={`/dashboard/${orgId}/${channel._id}`}>
+                  {channel.isPrivate ? (
+                    <Lock className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Hash className="mr-2 h-4 w-4" />
+                  )}
+                  <span className="truncate">{channel.name}</span>
+                </Link>
               </Button>
             ))}
           </div>
