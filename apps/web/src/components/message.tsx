@@ -6,8 +6,9 @@ interface Message {
   userId: string;
   createdAt: number;
   text: string;
-  avatarUrl: string
-  fullName: string
+  avatarUrl: string;
+  fullName: string;
+  style?: React.CSSProperties;
 }
 
 function formatTime(timestamp: any) {
@@ -20,21 +21,20 @@ function formatTime(timestamp: any) {
 }
 
 export default function Message(props: Message) {
-
-  const { id, userId, createdAt, text, avatarUrl, fullName } = props;
+  const { id, userId, createdAt, text, avatarUrl, fullName, style } = props;
   return (
     <div
       key={id}
+      style={style}
       className="flex gap-3 group hover:bg-accent/50 -mx-4 px-4 py-2 rounded"
     >
       <Avatar className="h-9 w-9 mt-0.5">
         <AvatarImage src={avatarUrl || "/placeholder.svg"} />
         <AvatarFallback>
-           {fullName
+          {fullName
             .split(" ")
             .map((n) => n[0])
-            .join("")} 
-            
+            .join("")}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">

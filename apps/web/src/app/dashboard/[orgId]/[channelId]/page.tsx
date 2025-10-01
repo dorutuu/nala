@@ -4,12 +4,13 @@ import Message from "@/components/message";
 import { MessageInput } from "@/components/message-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
 import type { Id } from "@my-better-t-app/backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { Hash, Lock } from "lucide-react";
 import { useParams } from "next/navigation";
+import { AutoSizer, List } from "react-virtualized";
+import "react-virtualized/styles.css";
 
 export default function ChannelPage() {
   const params = useParams();
@@ -35,21 +36,33 @@ export default function ChannelPage() {
         <ModeToggle />
       </div>
 
-      <ScrollArea className="flex-1 p-4 h-0">
-        <div className="space-y-4">
-          {messages?.map((msg) => (
-            <Message
-              key={msg._id}
-              id={msg._id}
-              userId={msg.userId}
-              createdAt={msg.createdAt}
-              text={msg.text}
-              fullName={msg.author.name}
-              avatarUrl={msg.author.avatarUrl}
+      <div className="flex-1 p-4 h-0">
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              height={height}
+              width={width}
+              rowCount={messages?.length || 0}
+              rowHeight={80}
+              rowRenderer={({ index, key, style }) => {
+                const msg = messages![index];
+                return (
+                  <div key={key} style={style}>
+                    <Message
+                      id={msg._id}
+                      userId={msg.userId}
+                      createdAt={msg.createdAt}
+                      text={msg.text}
+                      fullName={msg.author.name}
+                      avatarUrl={msg.author.avatarUrl}
+                    />
+                  </div>
+                );
+              }}
             />
-          ))}
-        </div>
-      </ScrollArea>
+          )}
+        </AutoSizer>
+      </div>
 
       <MessageInput channelId={channelId} channelName={channel?.name} />
     </div>
