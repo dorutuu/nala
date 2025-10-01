@@ -11,9 +11,10 @@ import { Send } from "lucide-react";
 interface MessageInputProps {
   channelId: Id<"channels">;
   channelName: string | undefined;
+  onMessageSent: () => void;
 }
 
-export function MessageInput({ channelId, channelName }: MessageInputProps) {
+export function MessageInput({ channelId, channelName, onMessageSent }: MessageInputProps) {
   const [text, setText] = useState("");
   const sendMessage = useMutation(api.messages.sendMessage);
 
@@ -36,6 +37,7 @@ export function MessageInput({ channelId, channelName }: MessageInputProps) {
 
     try {
       await sendMessage({ channelId, text });
+      onMessageSent();
     } catch (error) {
       console.error("Error sending message:", error);
       // Revert optimistic update if there's an error
