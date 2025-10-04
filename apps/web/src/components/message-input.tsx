@@ -16,13 +16,11 @@ import { useParams } from "next/navigation";
 interface MessageInputProps {
   channelId: Id<"channels">;
   channelName: string | undefined;
-  onMessageSent: () => void;
 }
 
 export function MessageInput({
   channelId,
   channelName,
-  onMessageSent,
 }: MessageInputProps) {
   const [text, setText] = useState("");
   const { user } = useUser();
@@ -85,7 +83,6 @@ export function MessageInput({
 
     try {
       await sendMessage({ channelId, text });
-      onMessageSent();
     } catch (error) {
       console.error("Error sending message:", error);
     }

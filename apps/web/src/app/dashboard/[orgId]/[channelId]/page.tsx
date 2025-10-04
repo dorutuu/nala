@@ -9,7 +9,7 @@ import type { Id } from "@my-better-t-app/backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { Hash, Lock } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export default function ChannelPage() {
@@ -33,6 +33,10 @@ export default function ChannelPage() {
       rowVirtualizer.scrollToIndex(messages.length - 1, { align: "end" });
     }
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-full">
@@ -89,7 +93,6 @@ export default function ChannelPage() {
       <MessageInput
         channelId={channelId}
         channelName={channel?.name}
-        onMessageSent={scrollToBottom}
       />
     </div>
   );
