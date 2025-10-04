@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
-import { type Id } from "@my-better-t-app/backend/convex/_generated/dataModel";
+import {
+  type Id,
+  type Doc,
+} from "@my-better-t-app/backend/convex/_generated/dataModel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { useParams } from "next/navigation";
 
 interface MessageInputProps {
   channelId: Id<"channels">;
@@ -14,33 +19,75 @@ interface MessageInputProps {
   onMessageSent: () => void;
 }
 
-export function MessageInput({ channelId, channelName, onMessageSent }: MessageInputProps) {
+export function MessageInput({
+  channelId,
+  channelName,
+  onMessageSent,
+}: MessageInputProps) {
   const [text, setText] = useState("");
-  const sendMessage = useMutation(api.messages.sendMessage);
+  const { user } = useUser();
+  const params = useParams();
+  const orgId = params.orgId as Id<"organizations">;
+
+  const optimisticUpdate = (
+    ctx: any,
+    { text, channelId }: { text: string; channelId: Id<"channels"> }
+  ) => {
+    try {
+      if (!ctx || !user) return;
+
+      const currentMessages = ctx.getQuery(api.messages.listMessages, {
+        channelId: channelId as string,
+      });
+
+      if (currentMessages === undefined) {
+        return;
+      }
+
+      const optimisticMessage: Doc<"messages"> & { author: Doc<"users"> } = {
+        _id: new Date().toISOString() as Id<"messages">,
+        _creationTime: Date.now(),
+        channelId: channelId as Id<"channels">,
+        orgId,
+        userId: user.id,
+        text,
+        parentMessageId: "",
+        createdAt: Date.now(),
+        editedAt: Date.now(),
+        author: {
+          _id: user.id as Id<"users">,
+          _creationTime: Date.now(),
+          clerkId: user.id,
+          name: user.fullName || "You",
+          email: user.primaryEmailAddress?.emailAddress || "",
+          avatarUrl: user.imageUrl || "",
+        },
+      };
+
+      ctx.setQuery(
+        api.messages.listMessages,
+        { channelId: channelId as string },
+        [...currentMessages, optimisticMessage]
+      );
+    } catch (error) {
+      // Silently catch the error to prevent a crash.
+    }
+  };
+
+  const sendMessage =
+    useMutation(api.messages.sendMessage).withOptimisticUpdate(
+      optimisticUpdate
+    );
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim() === "") return;
-
-    // Optimistic update
-    const optimisticMessage = {
-      _id: new Date().toISOString(),
-      _creationTime: Date.now(),
-      channelId,
-      text,
-      userId: "(optimistic)",
-      author: {
-        name: "You",
-        avatarUrl: "",
-      },
-    };
 
     try {
       await sendMessage({ channelId, text });
       onMessageSent();
     } catch (error) {
       console.error("Error sending message:", error);
-      // Revert optimistic update if there's an error
     }
 
     setText("");
