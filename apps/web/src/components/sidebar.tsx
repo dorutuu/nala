@@ -6,12 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Hash, Lock, ChevronDown, Bell, User } from "lucide-react";
+import { Hash, Lock, ChevronDown, Bell, User, UserPlus } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@my-better-t-app/backend/convex/_generated/api";
 import { CreateChannelModal } from "./create-channel-modal";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { InviteDialog } from "./invite-dialog";
 
 export function Sidebar() {
   const params = useParams();
@@ -37,25 +44,33 @@ export function Sidebar() {
   return (
     <div className="w-64 bg-sidebar text-sidebar-foreground flex flex-col">
       <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-sidebar-primary rounded flex items-center justify-center">
-              <span className="text-xs font-bold text-sidebar-primary-foreground">
-                {organizations?.[0]?.name[0] || "N"}
-              </span>
-            </div>
-            <span className="font-semibold text-sm">
-              {organizations?.[0]?.name || "No org"}
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </div>
+        {isClient && orgId && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center justify-between cursor-pointer hover:bg-sidebar-accent p-2 rounded-md -m-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-sidebar-primary rounded flex items-center justify-center">
+                    <span className="text-xs font-bold text-sidebar-primary-foreground">
+                      {organizations?.[0]?.name[0] || "N"}
+                    </span>
+                  </div>
+                  <span className="font-semibold text-sm">
+                    {organizations?.[0]?.name || "No org"}
+                  </span>
+                </div>
+                <ChevronDown className="h-4 w-4 text-sidebar-foreground" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <InviteDialog orgId={orgId}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Invite members</span>
+                </DropdownMenuItem>
+              </InviteDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <ScrollArea className="flex-1 px-2">

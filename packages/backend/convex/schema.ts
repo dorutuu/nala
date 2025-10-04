@@ -86,4 +86,18 @@ export default defineSchema({
     userId: v.string(),
     emoji: v.string(),
   }).index("by_message", ["messageId"]),
+
+  /**
+   * Invitations
+   */
+  invites: defineTable({
+    orgId: v.string(),
+    inviterId: v.string(), // Clerk userId
+    email: v.string(),
+    role: v.string(), // "admin" | "member"
+    token: v.string(),
+    status: v.string(), // "pending" | "accepted"
+  })
+    .index("by_org", ["orgId"])
+    .index("by_token", ["token"]),
 });
